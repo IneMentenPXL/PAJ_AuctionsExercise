@@ -42,24 +42,18 @@ public class UserGetAgeTest {
     @Test
     public void returnsCorrectAgeWhenHavingBirthdayToday() {
         user.setDateOfBirth(LocalDate.now().withYear(2000));
-        when(userDao.findUserById(USER_ID)).thenReturn(Optional.of(user));
-        UserDTO userById = userService.getUserById(USER_ID);
-        assertEquals(21, userById.getAge());
+        assertEquals(21, user.getAge());
     }
 
     @Test
     public void returnsCorrectAgeWhenHavingBirthdayTomorrow() {
         user.setDateOfBirth(LocalDate.now().plusDays(1).withYear(2000));
-        when(userDao.findUserById(USER_ID)).thenReturn(Optional.of(user));
-        UserDTO userById = userService.getUserById(USER_ID);
         assertEquals(20, user.getAge());
     }
 
     @Test
     public void returnsCorrectAgeWhenBirthdayWasYesterday() {
         user.setDateOfBirth(LocalDate.now().minusDays(1).withYear(2000));
-        when(userDao.findUserById(USER_ID)).thenReturn(Optional.of(user));
-        UserDTO userById = userService.getUserById(USER_ID);
         assertEquals(21, user.getAge());
     }
 

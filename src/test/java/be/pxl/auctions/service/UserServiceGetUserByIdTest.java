@@ -40,16 +40,17 @@ public class UserServiceGetUserByIdTest {
 	}
 
 	@Test
-	public void returnsNullWhenNoUserWithGivenIdFound() {
+	public void throwsUserNotFoundExceptionWhenNoUserWithGivenIdFound() {
 		when(userDao.findUserById(USER_ID)).thenReturn(Optional.empty());
 
 		assertThrows(UserNotFoundException.class, () -> userService.getUserById(USER_ID));
 	}
 
 	@Test
-	public void returnsUserWhenUserFoundWithGivenId() {
+	public void returnsUserDTOWhenUserFoundWithGivenId() {
 		when(userDao.findUserById(USER_ID)).thenReturn(Optional.of(user));
 		UserDTO userById = userService.getUserById(USER_ID);
+
 		assertEquals(USER_ID, userById.getId());
 	}
 }
