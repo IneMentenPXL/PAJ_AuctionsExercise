@@ -2,6 +2,8 @@ package be.pxl.auctions.service;
 
 import be.pxl.auctions.dao.UserDao;
 import be.pxl.auctions.model.User;
+import be.pxl.auctions.model.builder.UserBuilder;
+import be.pxl.auctions.model.builder.UserCreateResourceBuilder;
 import be.pxl.auctions.rest.resource.UserCreateResource;
 import be.pxl.auctions.rest.resource.UserDTO;
 import be.pxl.auctions.util.exception.DuplicateEmailException;
@@ -11,6 +13,8 @@ import be.pxl.auctions.util.exception.RequiredFieldException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,13 +26,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceCreateUserTest {
-    private static final String EMAIL = "mark@facebook.com";
-    private static final String FIRSTNAME = "mark";
-    private static final String LASTNAME = "Zuckerberg";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Mock
@@ -36,14 +38,12 @@ public class UserServiceCreateUserTest {
     @InjectMocks
     private UserService userService;
     private UserCreateResource user;
+    @Captor
+    private ArgumentCaptor<User> userCaptor;
 
     @BeforeEach
     public void init() {
-        user = new UserCreateResource();
-        user.setEmail(EMAIL);
-        user.setFirstName(FIRSTNAME);
-        user.setLastName(LASTNAME);
-        user.setDateOfBirth("03/05/1983");
+        user = UserCreateResourceBuilder.aUserCreateResource().build();
     }
     
     @Test
@@ -77,8 +77,8 @@ public class UserServiceCreateUserTest {
     }
 
     @Test
-    public void throwsDuplicateEmailExceptionWhenEmailExists() {
-        when(userDao.findUserByEmail(EMAIL)).thenReturn(Optional.of(new User()));
+    public void throwsDuplicateEmailExceptionWhenEmailNotUnique() {
+        when(userDao.findUserByEmail(UserCreateResourceBuilder.EMAIL)).thenReturn(Optional.of(UserBuilder.aUser().build()));
         assertThrows(DuplicateEmailException.class, () -> userService.createUser(user));
     }
 
@@ -90,15 +90,17 @@ public class UserServiceCreateUserTest {
 
     @Test
     public void validUserIsSavedCorrectly() {
-        when(userDao.findUserByEmail(EMAIL)).thenReturn(Optional.empty());
+        when(userDao.findUserByEmail(UserCreateResourceBuilder.EMAIL)).thenReturn(Optional.empty());
         when(userDao.saveUser(any())).thenAnswer(returnsFirstArg());
 
         UserDTO createdUser = userService.createUser(user);
 
         assertNotNull(createdUser);
-        assertEquals(createdUser.getFirstName(), user.getFirstName());
-        assertEquals(createdUser.getLastName(), user.getLastName());
-        assertEquals(createdUser.getEmail(), user.getEmail());
-        assertEquals(createdUser.getDateOfBirth().format(FORMATTER), user.getDateOfBirth());
+        verify(userDao).saveUser(userCaptor.capture());
+        User userSaved = userCaptor.getValue();
+        assertEquals(UserCreateResourceBuilder.FIRST_NAME, userSaved.getFirstName());
+        assertEquals(UserCreateResourceBuilder.LAST_NAME, userSaved.getLastName());
+        assertEquals(UserCreateResourceBuilder.EMAIL, userSaved.getEmail());
+        assertEquals(UserCreateResourceBuilder.DATE_OF_BIRTH, userSaved.getDateOfBirth().format(FORMATTER));
     }
 }

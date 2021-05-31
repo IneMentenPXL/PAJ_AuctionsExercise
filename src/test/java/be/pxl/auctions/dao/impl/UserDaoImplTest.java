@@ -1,6 +1,7 @@
 package be.pxl.auctions.dao.impl;
 
 import be.pxl.auctions.model.User;
+import be.pxl.auctions.model.builder.UserBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -9,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,11 +25,7 @@ public class UserDaoImplTest {
 
 	@Test
 	public void userCanBeSavedAndRetrievedById() {
-		User user = new User();
-		user.setFirstName("Mark");
-		user.setLastName("Zuckerberg");
-		user.setDateOfBirth(LocalDate.of(1989, 5, 3));
-		user.setEmail("mark@facebook.com");
+		User user = UserBuilder.aUser().build();
 		long newUserId = userDao.saveUser(user).getId();
 		entityManager.flush();
 		entityManager.clear();
@@ -37,18 +33,14 @@ public class UserDaoImplTest {
 		Optional<User> retrievedUser = userDao.findUserById(newUserId);
 		assertTrue(retrievedUser.isPresent());
 
-		assertEquals(user.getFirstName(), retrievedUser.get().getFirstName());
-		assertEquals(user.getLastName(), retrievedUser.get().getLastName());
-		assertEquals(user.getEmail(), retrievedUser.get().getEmail());
-		assertEquals(user.getDateOfBirth(), retrievedUser.get().getDateOfBirth());
+		assertEquals(UserBuilder.FIRST_NAME, retrievedUser.get().getFirstName());
+		assertEquals(UserBuilder.LAST_NAME, retrievedUser.get().getLastName());
+		assertEquals(UserBuilder.EMAIL, retrievedUser.get().getEmail());
+		assertEquals(UserBuilder.DATE_OF_BIRTH, retrievedUser.get().getDateOfBirth());
 	}
 	@Test
 	public void userCanBeSavedAndRetrievedByEmail() {
-		User user = new User();
-		user.setFirstName("Mark");
-		user.setLastName("Zuckerberg");
-		user.setDateOfBirth(LocalDate.of(1989, 5, 3));
-		user.setEmail("mark@facebook.com");
+		User user = UserBuilder.aUser().withEmail("elly@facebook.com").build();
 		String newUserEmail = userDao.saveUser(user).getEmail();
 		entityManager.flush();
 		entityManager.clear();
@@ -56,10 +48,7 @@ public class UserDaoImplTest {
 		Optional<User> retrievedUser = userDao.findUserByEmail(newUserEmail);
 		assertTrue(retrievedUser.isPresent());
 
-		assertEquals(user.getFirstName(), retrievedUser.get().getFirstName());
-		assertEquals(user.getLastName(), retrievedUser.get().getLastName());
 		assertEquals(user.getEmail(), retrievedUser.get().getEmail());
-		assertEquals(user.getDateOfBirth(), retrievedUser.get().getDateOfBirth());
 	}
 
 	@Test
@@ -70,23 +59,22 @@ public class UserDaoImplTest {
 
 	@Test
 	public void allUsersCanBeRetrieved() {
-		User user = new User();
-		user.setFirstName("Mark");
-		user.setLastName("Zuckerberg");
-		user.setDateOfBirth(LocalDate.of(1989, 5, 3));
-		user.setEmail("mark@facebook.com");
+		int initialNumberOfUsers = userDao.findAllUsers().size();
+
+		User user = UserBuilder.aUser().withEmail("emma@facebook.com").build();
 		String newUserEmail = userDao.saveUser(user).getEmail();
 		entityManager.flush();
 		entityManager.clear();
 
 		List<User> allUsers = userDao.findAllUsers();
-		assertTrue(allUsers.size() >= 1);
-		boolean isFound = false;
-		for (User u : allUsers) {
-			if (u.getEmail().equals(newUserEmail)) {
-				isFound = true;
-			}
-		}
-		assertTrue(isFound);
+		assertEquals(initialNumberOfUsers + 1, allUsers.size());
+		assertEquals(1, allUsers.stream().filter(u -> u.getEmail().equals(newUserEmail)).count());
+	}
+
+	@Test
+	public void emptyOptionalWhenNoUserFoundWithGivenEmail() {
+		Optional<User> user = userDao.findUserByEmail("mickey@disney.com");
+
+		assertTrue(user.isEmpty());
 	}
 }
