@@ -17,16 +17,21 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(value
-			= { UserNotFoundException.class })
-	protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
-		return handleExceptionInternal(ex, ex.getMessage(),
-				new HttpHeaders(), HttpStatus.NOT_FOUND, request);
-	}
+    @ExceptionHandler(value = {UserNotFoundException.class})
+    protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(),
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
 
-	@ExceptionHandler(value = { DuplicateEmailException.class, InvalidBidException.class, InvalidDateException.class, InvalidEmailException.class, RequiredFieldException.class })
-	protected ResponseEntity<Object> handleNotAcceptable(RuntimeException ex, WebRequest request) {
-		return handleExceptionInternal(ex, ex.getMessage(),
-				new HttpHeaders(), HttpStatus.NOT_ACCEPTABLE, request);
-	}
+    @ExceptionHandler(value = {DuplicateEmailException.class, InvalidDateException.class, InvalidEmailException.class, RequiredFieldException.class})
+    protected ResponseEntity<Object> handleNotAcceptable(RuntimeException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(),
+                new HttpHeaders(), HttpStatus.NOT_ACCEPTABLE, request);
+    }
+
+    @ExceptionHandler(value = {InvalidBidException.class})
+    protected ResponseEntity<Object> handleBadRequest(RuntimeException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(),
+                new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
 }

@@ -1,9 +1,6 @@
 package be.pxl.auctions.model.builder;
 
-import be.pxl.auctions.model.User;
 import be.pxl.auctions.rest.resource.UserCreateResource;
-
-import java.time.LocalDate;
 
 public final class UserCreateResourceBuilder {
     public static final String FIRST_NAME = "Mark";

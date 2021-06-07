@@ -3,7 +3,7 @@ package be.pxl.auctions.service;
 import be.pxl.auctions.dao.UserDao;
 import be.pxl.auctions.model.User;
 import be.pxl.auctions.rest.resource.UserCreateResource;
-import be.pxl.auctions.rest.resource.UserDTO;
+import be.pxl.auctions.rest.resource.UserResource;
 import be.pxl.auctions.util.EmailValidator;
 import be.pxl.auctions.util.exception.DuplicateEmailException;
 import be.pxl.auctions.util.exception.InvalidDateException;
@@ -28,15 +28,15 @@ public class UserService {
 	@Autowired
 	private UserDao userDao;
 
-	public List<UserDTO> getAllUsers() {
+	public List<UserResource> getAllUsers() {
 		return userDao.findAllUsers().stream().map(this::mapToUserResource).collect(Collectors.toList());
 	}
 
-	public UserDTO getUserById(long userId) {
+	public UserResource getUserById(long userId) {
 		return userDao.findUserById(userId).map(this::mapToUserResource).orElseThrow(()  -> new UserNotFoundException("Unable to find User with id [" + userId + "]"));
 	}
 
-	public UserDTO createUser(UserCreateResource userInfo) throws RequiredFieldException, InvalidEmailException, DuplicateEmailException, InvalidDateException {
+	public UserResource createUser(UserCreateResource userInfo) throws RequiredFieldException, InvalidEmailException, DuplicateEmailException, InvalidDateException {
 		if (StringUtils.isBlank(userInfo.getFirstName())) {
 			throw new RequiredFieldException("FirstName");
 		}
@@ -63,15 +63,15 @@ public class UserService {
 		return mapToUserResource(userDao.saveUser(user));
 	}
 
-	private UserDTO mapToUserResource(User user) {
-		UserDTO userDTO = new UserDTO();
-		userDTO.setId(user.getId());
-		userDTO.setFirstName(user.getFirstName());
-		userDTO.setLastName(user.getLastName());
-		userDTO.setDateOfBirth(user.getDateOfBirth());
-		userDTO.setAge(user.getAge());
-		userDTO.setEmail(user.getEmail());
-		return userDTO;
+	private UserResource mapToUserResource(User user) {
+		UserResource userResource = new UserResource();
+		userResource.setId(user.getId());
+		userResource.setFirstName(user.getFirstName());
+		userResource.setLastName(user.getLastName());
+		userResource.setDateOfBirth(user.getDateOfBirth());
+		userResource.setAge(user.getAge());
+		userResource.setEmail(user.getEmail());
+		return userResource;
 	}
 
 	private User mapToUser(UserCreateResource userCreateResource) throws InvalidDateException {
@@ -79,7 +79,7 @@ public class UserService {
 		user.setFirstName(userCreateResource.getFirstName());
 		user.setLastName(userCreateResource.getLastName());
 		try {
-			user.setDateOfBirth(LocalDate.parse(userCreateResource.getDateOfBirth(), DATE_FORMAT));
+			user.setDateOfBirth(userCreateResource.getDateOfBirth());
 		} catch (DateTimeParseException e) {
 			throw new InvalidDateException("[" + user.getDateOfBirth() + "] is not a valid date. Excepted format: dd/mm/yyyy");
 		}

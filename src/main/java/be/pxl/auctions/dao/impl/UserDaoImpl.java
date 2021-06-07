@@ -16,35 +16,35 @@ import java.util.Optional;
 
 @Repository
 public class UserDaoImpl implements UserDao {
-	private static final Logger LOGGER = LogManager.getLogger(UserDaoImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(UserDaoImpl.class);
 
-	@PersistenceContext
-	private EntityManager entityManager;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-	@Transactional
-	public User saveUser(User user) {
-		LOGGER.info("Saving user [" + user.getEmail() + "]");
-		entityManager.persist(user);
-		return user;
-	}
+    @Transactional
+    public User saveUser(User user) {
+        LOGGER.info("Saving user [" + user.getEmail() + "]");
+        entityManager.persist(user);
+        return user;
+    }
 
-	public Optional<User> findUserByEmail(String email) {
-		TypedQuery<User> userQuery = entityManager.createNamedQuery("findUserByEmail", User.class);
-		userQuery.setParameter("email", email);
-		try {
-			 return Optional.of(userQuery.getSingleResult());
-		} catch (NoResultException e) {
-			LOGGER.info("No user found with email [" + email + "]");
-			return Optional.empty();
-		}
-	}
+    public Optional<User> findUserByEmail(String email) {
+        TypedQuery<User> userQuery = entityManager.createNamedQuery("findUserByEmail", User.class);
+        userQuery.setParameter("email", email);
+        try {
+            return Optional.of(userQuery.getSingleResult());
+        } catch (NoResultException e) {
+            LOGGER.info("No user found with email [" + email + "]");
+            return Optional.empty();
+        }
+    }
 
-	public Optional<User> findUserById(long userId) {
-		return Optional.ofNullable(entityManager.find(User.class, userId));
-	}
+    public Optional<User> findUserById(long userId) {
+        return Optional.ofNullable(entityManager.find(User.class, userId));
+    }
 
-	public List<User> findAllUsers() {
-		TypedQuery<User> findAllQuery = entityManager.createNamedQuery("findAllUsers", User.class);
-		return findAllQuery.getResultList();
-	}
+    public List<User> findAllUsers() {
+        TypedQuery<User> findAllQuery = entityManager.createNamedQuery("findAllUsers", User.class);
+        return findAllQuery.getResultList();
+    }
 }

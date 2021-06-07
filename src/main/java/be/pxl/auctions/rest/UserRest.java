@@ -2,7 +2,7 @@ package be.pxl.auctions.rest;
 
 
 import be.pxl.auctions.rest.resource.UserCreateResource;
-import be.pxl.auctions.rest.resource.UserDTO;
+import be.pxl.auctions.rest.resource.UserResource;
 import be.pxl.auctions.service.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,18 +25,18 @@ public class UserRest {
     private UserService userService;
 
     @GetMapping
-    public List<UserDTO> getAllUsers() {
+    public List<UserResource> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("{userId}")
-    public UserDTO getUserById(@PathVariable("userId") long userId) {
+    public UserResource getUserById(@PathVariable("userId") long userId) {
         return userService.getUserById(userId);
     }
 
 
     @PostMapping
-    public UserDTO createUser(@RequestBody UserCreateResource userCreateResource) {
+    public UserResource createUser(@RequestBody UserCreateResource userCreateResource) {
         return userService.createUser(userCreateResource);
     }
 }

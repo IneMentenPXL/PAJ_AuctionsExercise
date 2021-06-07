@@ -5,7 +5,7 @@ import be.pxl.auctions.model.User;
 import be.pxl.auctions.model.builder.UserBuilder;
 import be.pxl.auctions.model.builder.UserCreateResourceBuilder;
 import be.pxl.auctions.rest.resource.UserCreateResource;
-import be.pxl.auctions.rest.resource.UserDTO;
+import be.pxl.auctions.rest.resource.UserResource;
 import be.pxl.auctions.util.exception.DuplicateEmailException;
 import be.pxl.auctions.util.exception.InvalidDateException;
 import be.pxl.auctions.util.exception.InvalidEmailException;
@@ -93,7 +93,7 @@ public class UserServiceCreateUserTest {
         when(userDao.findUserByEmail(UserCreateResourceBuilder.EMAIL)).thenReturn(Optional.empty());
         when(userDao.saveUser(any())).thenAnswer(returnsFirstArg());
 
-        UserDTO createdUser = userService.createUser(user);
+        UserResource createdUser = userService.createUser(user);
 
         assertNotNull(createdUser);
         verify(userDao).saveUser(userCaptor.capture());

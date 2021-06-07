@@ -3,7 +3,7 @@ package be.pxl.auctions.service;
 import be.pxl.auctions.dao.UserDao;
 import be.pxl.auctions.model.User;
 import be.pxl.auctions.model.builder.UserBuilder;
-import be.pxl.auctions.rest.resource.UserDTO;
+import be.pxl.auctions.rest.resource.UserResource;
 import be.pxl.auctions.util.exception.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +45,7 @@ public class UserServiceGetUserByIdTest {
 	public void returnsUserDTOWhenUserFoundWithGivenId() {
 		when(userDao.findUserById(USER_ID)).thenReturn(Optional.of(user));
 
-		UserDTO userById = userService.getUserById(USER_ID);
+		UserResource userById = userService.getUserById(USER_ID);
 		assertEquals(USER_ID, userById.getId());
 		assertEquals(UserBuilder.FIRST_NAME, userById.getFirstName());
 		assertEquals(UserBuilder.LAST_NAME, userById.getLastName());

@@ -38,6 +38,7 @@ public class UserDaoImplTest {
 		assertEquals(UserBuilder.EMAIL, retrievedUser.get().getEmail());
 		assertEquals(UserBuilder.DATE_OF_BIRTH, retrievedUser.get().getDateOfBirth());
 	}
+
 	@Test
 	public void userCanBeSavedAndRetrievedByEmail() {
 		User user = UserBuilder.aUser().withEmail("elly@facebook.com").build();

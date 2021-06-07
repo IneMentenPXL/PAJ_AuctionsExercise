@@ -2,7 +2,7 @@ package be.pxl.auctions.rest.resource;
 
 import java.time.LocalDate;
 
-public class UserDTO {
+public class UserResource {
 	private long id;
 	private String firstName;
 	private String lastName;
